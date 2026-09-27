@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+@layer theme, base, clerk, components, utilities;
+@import 'tailwindcss';
+@import '@clerk/themes/shadcn.css';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  --background: 156 19% 7%;
+  --foreground: 42 24% 91%;
+  --card: 156 16% 10%;
+  --card-foreground: 42 24% 91%;
+  --border: 156 10% 19%;
+  --input: 156 11% 22%;
+  --ring: 151 35% 48%;
+  --primary: 151 35% 49%;
+  --primary-foreground: 156 24% 7%;
+  --secondary: 157 13% 15%;
+  --secondary-foreground: 42 20% 84%;
+  --muted: 156 12% 13%;
+  --muted-foreground: 150 9% 57%;
+  --accent: 41 60% 67%;
+  --accent-foreground: 156 24% 7%;
+  --destructive: 4 54% 62%;
+  --destructive-foreground: 42 24% 95%;
+  --app-font-sans: 'Manrope', sans-serif;
+  --app-font-mono: 'DM Mono', monospace;
+  --radius: 0.7rem;
+}
+
+.light {
+  --background: 42 25% 94%;
+  --foreground: 160 20% 13%;
+  --card: 42 31% 98%;
+  --card-foreground: 160 20% 13%;
+  --border: 155 12% 81%;
+  --input: 155 12% 76%;
+  --muted: 43 17% 89%;
+  --muted-foreground: 157 9% 42%;
+  --secondary: 151 14% 86%;
+  --secondary-foreground: 158 17% 20%;
+}
+
+* { box-sizing: border-box; }
+html { background: hsl(var(--background)); }
+body {
+  margin: 0;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--app-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+::selection { background: hsl(var(--primary) / .28); }
+
+.shell-grid {
+  background-image: linear-gradient(hsl(var(--border) / .18) 1px, transparent 1px);
+  background-size: 100% 44px;
+}
+.hairline { border-color: hsl(var(--border) / .78); }
+.mono { font-family: var(--app-font-mono); }
+.fade-in { animation: fade-in .24s ease-out both; }
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }

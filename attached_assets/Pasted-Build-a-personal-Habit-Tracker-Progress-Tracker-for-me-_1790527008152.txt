@@ -1,0 +1,268 @@
+Build a personal Habit Tracker + Progress Tracker for me.
+
+This is only for my personal use, not a commercial product. Keep it simple, practical, natural, clean, and premium. Do not over-design it.
+
+Core Design Philosophy
+
+- Minimal and distraction-free
+- Dark green themed
+- Premium but understated
+- Clean typography
+- Excellent spacing and visual hierarchy
+- No unnecessary animations
+- No gradients everywhere
+- No excessive cards, badges, gamification, confetti, streak fireworks, or motivational quotes
+- No childish productivity-app aesthetic
+- Everything should have a clear purpose
+- Mobile-first and responsive
+- The interface should feel calm and serious
+
+Think: personal command center, not social media.
+
+Visual Style
+
+Use a dark green / near-black color system.
+
+Suggested palette:
+
+- Background: very dark green-black
+- Primary: deep forest green
+- Accent: muted emerald
+- Text: warm off-white
+- Secondary text: muted gray-green
+- Borders: subtle dark green-gray
+
+Use rounded corners moderately. Avoid excessive pill-shaped UI.
+
+Main Dashboard
+
+The dashboard should immediately show:
+
+1. Today's date
+2. Today's habits
+3. Completion status for each habit
+4. Today's overall completion percentage
+5. Current streak information where relevant
+6. A simple progress overview
+7. A small weekly consistency visualization
+
+The dashboard should answer one question immediately:
+
+"How am I doing today, and am I staying consistent?"
+
+Habit System
+
+Allow me to create and manage personal habits.
+
+Each habit should have:
+
+- Habit name
+- Category
+- Frequency
+- Target
+- Optional note
+- Active/inactive status
+
+Examples:
+
+- Study
+- Salah
+- Exercise
+- Reading
+- Skill learning
+- Deep work
+- Content creation
+- Sleep
+- Personal habits
+
+Allow different tracking types where useful:
+
+- Yes/No
+- Daily count
+- Minutes
+- Hours
+- Quantity
+
+For example:
+
+- Read → 20 minutes
+- Exercise → Yes/No
+- Study → 2 hours
+- Quran → Yes/No
+- Skill → 60 minutes
+
+Do not force every habit into the same tracking format.
+
+Progress Tracking
+
+Create a dedicated Progress section.
+
+Show meaningful progress over:
+
+- Today
+- This week
+- This month
+- Custom date range
+
+Include simple visualizations such as:
+
+- Weekly completion
+- Monthly completion
+- Habit consistency
+- Streaks
+- Total completed days
+- Target vs actual
+- Trend over time
+
+Keep charts minimal and readable.
+
+Do not create complicated analytics that don't help me understand my behavior.
+
+Calendar / History
+
+Create a clean history view.
+
+I should be able to:
+
+- View previous days
+- See completed/missed habits
+- See daily completion percentage
+- Open a specific date
+- Correct an incorrectly recorded habit
+
+Use a subtle calendar heatmap or similar visualization if it genuinely improves usability.
+
+Habit Details
+
+Clicking a habit should open its personal statistics:
+
+- Current streak
+- Longest streak
+- Completion rate
+- Weekly performance
+- Monthly performance
+- Total completed
+- Recent history
+- Progress toward target
+
+Keep the information concise and useful.
+
+Data & Logic
+
+This is important.
+
+The application must have real persistent data, not fake demo data.
+
+Implement:
+
+- Persistent storage
+- Reliable habit history
+- Accurate date handling
+- Accurate streak calculations
+- Accurate completion percentages
+- Ability to edit/delete habits
+- Ability to edit historical records
+- Data should remain after refreshing or reopening the app
+
+Avoid unnecessary backend complexity if local storage/database is sufficient for a personal application.
+
+Daily Logic
+
+A habit should only count as completed according to its actual tracking requirement.
+
+For example:
+
+If the target is 60 minutes and I record 45 minutes, show:
+
+45 / 60 min
+
+and calculate progress accordingly.
+
+Do not treat partial completion as automatically equal to full completion unless the habit configuration explicitly says so.
+
+Streak calculations must be logically correct and should not break because of timezone/date issues.
+
+Navigation
+
+Keep navigation extremely simple:
+
+- Today
+- Habits
+- Progress
+- History
+- Settings
+
+Do not create unnecessary pages.
+
+Settings
+
+Include only useful settings:
+
+- Theme
+- Start of week
+- Data management
+- Export data
+- Import data
+- Reset data
+- Basic preferences
+
+Add confirmation before destructive actions.
+
+UX Requirements
+
+The app should feel fast and effortless.
+
+A daily habit check should take only a few seconds.
+
+Prioritize:
+
+1. Readability
+2. Speed
+3. Accuracy
+4. Simplicity
+5. Visual consistency
+
+Avoid:
+
+- Excessive popups
+- Long forms
+- Unnecessary onboarding
+- Notifications unless specifically implemented later
+- Gamification
+- Social features
+- Accounts/login unless technically necessary
+- AI features
+- Unnecessary settings
+
+Technical Quality
+
+Before considering the project complete:
+
+- Remove placeholder content
+- Remove fake statistics
+- Test every interaction
+- Test refreshing/reopening
+- Test adding/editing/deleting habits
+- Test historical records
+- Test streak calculations
+- Test partial progress
+- Test empty states
+- Test mobile responsiveness
+- Fix console errors
+- Make sure no feature is visually broken
+
+Use reusable components and clean architecture so the app remains easy to modify later.
+
+Final Standard
+
+The finished application should feel like something I personally use every morning and evening.
+
+It should be:
+
+Simple. Dark. Green. Clean. Logical. Quiet. Accurate.
+
+Do not add features just because they are possible.
+
+If a feature does not make habit tracking or progress understanding better, leave it out.
+
+Build the actual working application, not a mockup.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Habit Tracker"
+description = "A personal, mobile-first habit and progress tracker with persistent local data, accurate partial-progress calculations, streaks, history editing, and concise weekly and monthly insights."
+version = "1.0.0"
+id = "artifacts/habit-tracker"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20387
+
+[services.development]
+run = "pnpm --filter @workspace/habit-tracker run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/habit-tracker", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/habit-tracker/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20387"
+BASE_PATH = "/"
