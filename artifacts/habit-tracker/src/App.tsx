@@ -82,7 +82,7 @@ function AppShell({ children, store, onNavigate }: { children: ReactNode; store:
       <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b hairline bg-background/95 px-5 backdrop-blur md:px-10">
          <div className="flex items-center gap-3">
            <button onClick={() => setMobileNav(true)} className="text-muted-foreground md:hidden" aria-label="Open navigation" data-testid="button-open-nav"><Menu size={20} /></button>
-           <span className="text-sm font-bold tracking-[-.02em]" data-testid="text-workspace-title">Habits</span>
+           <span className="text-sm font-bold tracking-[-.02em]" data-testid="text-workspace-title">Habitr</span>
          </div>
          <div className="flex items-center gap-3">
            <span className="mono hidden text-[10px] uppercase tracking-[.18em] text-muted-foreground sm:inline">Personal practice</span>
