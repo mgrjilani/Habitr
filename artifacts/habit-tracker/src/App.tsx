@@ -52,6 +52,11 @@ function AppShell({ children, store, onNavigate }: { children: ReactNode; store:
   const todayPct = completion(store.habits.filter(h => h.active), store.records[today]);
   const email = user?.primaryEmailAddress?.emailAddress || '';
   const accountName = user?.firstName || email.split('@')[0] || 'Your account';
+  const requestSignOut = () => {
+    if (window.confirm('Are you sure you want to log out of Habitr? Your saved data will remain on this device.')) {
+      void signOut({ redirectUrl: basePath || '/' });
+    }
+  };
   return <div className="min-h-[100dvh] bg-background text-foreground">
     <aside className={`fixed inset-y-0 left-0 z-30 w-[246px] border-r hairline bg-card px-5 py-6 transition-transform md:translate-x-0 ${mobileNav ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="mb-12 flex items-center justify-between">
@@ -80,7 +85,7 @@ function AppShell({ children, store, onNavigate }: { children: ReactNode; store:
          <div className="flex items-center gap-3">
            <span className="mono hidden text-[10px] uppercase tracking-[.18em] text-muted-foreground sm:inline">Personal practice</span>
            <div className="size-2 rounded-full bg-primary" title="Saved to this account" />
-           <button type="button" onClick={() => signOut({ redirectUrl: basePath || '/' })} className="rounded-lg border hairline bg-card px-3 py-2 text-left transition-colors hover:bg-secondary" title="Sign out">
+            <button type="button" onClick={requestSignOut} className="rounded-lg border hairline bg-card px-3 py-2 text-left transition-colors hover:bg-secondary" title="Sign out" data-testid="button-sign-out">
              <span className="block max-w-[110px] truncate text-[11px] font-semibold">{accountName}</span>
              <span className="block max-w-[110px] truncate text-[10px] text-muted-foreground">{email}</span>
            </button>
