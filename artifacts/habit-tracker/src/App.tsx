@@ -20,11 +20,15 @@ const shiftDate = (key: string, amount: number) => { const d = new Date(`${key}T
 const daysBetween = (a: string, b: string) => Math.round((new Date(`${b}T12:00:00`).getTime() - new Date(`${a}T12:00:00`).getTime()) / 86400000);
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 const initialStore: Store = { habits: [], records: {}, settings: { theme: 'dark', weekStarts: 1 } };
-const storeKey = (userId: string) => `stead-store:${userId}`;
+const storeKey = (userId: string) => `habitr-store:${userId}`;
+const legacyStoreKeys = (userId: string) => [`stead-store:${userId}`];
 const habitCategories = ['Personal', 'Health', 'Fitness', 'Mind', 'Work', 'Learning', 'Home'];
 
 function loadStore(userId: string): Store {
-  try { const saved = localStorage.getItem(storeKey(userId)); return saved ? { ...initialStore, ...JSON.parse(saved) } : initialStore; } catch { return initialStore; }
+  try {
+    const saved = [storeKey(userId), ...legacyStoreKeys(userId)].map(key => localStorage.getItem(key)).find(Boolean);
+    return saved ? { ...initialStore, ...JSON.parse(saved) } : initialStore;
+  } catch { return initialStore; }
 }
 function isScheduled(habit: Habit, key: string) { const day = new Date(`${key}T12:00:00`).getDay(); return habit.frequency === 'daily' || (habit.frequency === 'weekdays' && day > 0 && day < 6) || (habit.frequency === 'custom' && habit.days.includes(day)); }
 function met(habit: Habit, value = 0) { return habit.tracking === 'yes-no' ? value >= 1 : value >= habit.target; }
@@ -53,7 +57,7 @@ function AppShell({ children, store, onNavigate }: { children: ReactNode; store:
       <div className="mb-12 flex items-center justify-between">
          <Link href="/today" onClick={() => { setMobileNav(false); onNavigate(); }} className="flex items-center gap-3" data-testid="link-logo">
           <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"><SlidersHorizontal size={16} /></span>
-           <span className="text-[15px] font-bold tracking-[-.02em]">DAYLI</span>
+           <span className="text-[15px] font-bold tracking-[-.02em]">Habitr</span>
         </Link>
         <button onClick={() => setMobileNav(false)} className="text-muted-foreground md:hidden" aria-label="Close navigation" data-testid="button-close-nav"><X size={18} /></button>
       </div>
@@ -188,8 +192,8 @@ function History({ store, setSelectedDate, onNavigate }: { store: Store; setSele
 
 function Settings({ store, setStore }: { store: Store; setStore: (fn: (s: Store) => Store) => void }) {
   const file = (e: ChangeEvent<HTMLInputElement>) => { const f = e.target.files?.[0]; if (!f) return; const reader = new FileReader(); reader.onload = () => { try { const parsed = JSON.parse(String(reader.result)); if (parsed.habits && parsed.records) setStore(() => ({ ...initialStore, ...parsed })); } catch { window.alert('That file could not be read.'); } }; reader.readAsText(f); };
-  const exportData = () => { const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `dayli-${todayKey()}.json`; a.click(); URL.revokeObjectURL(a.href); };
-  return <div className="fade-in"><PageIntro eyebrow="Keep it yours" title="Settings" description="DAYLI stores everything in this browser. Export a copy whenever you need one." /><div className="max-w-2xl space-y-5"><div className="rounded-xl border hairline bg-card p-6"><h2 className="text-sm font-bold">Appearance</h2><p className="mt-1 text-xs text-muted-foreground">Choose the atmosphere that makes checking in feel natural.</p><div className="mt-5 flex gap-2"><Button variant={store.settings.theme === 'dark' ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, theme: 'dark' } }))} testId="button-theme-dark"><Moon size={15} /> Dark</Button><Button variant={store.settings.theme === 'light' ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, theme: 'light' } }))} testId="button-theme-light"><Sun size={15} /> Light</Button></div></div><div className="rounded-xl border hairline bg-card p-6"><h2 className="text-sm font-bold">Week starts on</h2><div className="mt-4 flex gap-2"><Button variant={store.settings.weekStarts === 1 ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, weekStarts: 1 } }))}>Monday</Button><Button variant={store.settings.weekStarts === 0 ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, weekStarts: 0 } }))}>Sunday</Button></div></div><div className="rounded-xl border hairline bg-card p-6"><h2 className="text-sm font-bold">Your data</h2><p className="mt-1 text-xs text-muted-foreground">A portable JSON file containing habits, records, and preferences.</p><div className="mt-5 flex flex-wrap gap-2"><Button variant="outline" onClick={exportData} testId="button-export"><Download size={15} /> Export data</Button><label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border hairline px-3.5 py-2.5 text-xs font-bold hover:bg-secondary"><Upload size={15} /> Import data<input type="file" accept=".json,application/json" onChange={file} className="hidden" data-testid="input-import" /></label></div></div><div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6"><h2 className="text-sm font-bold">Reset workspace</h2><p className="mt-1 text-xs text-muted-foreground">Remove every habit and daily record from this browser. This cannot be undone.</p><Button variant="danger" onClick={() => { if (window.confirm('Reset all habits and records? This cannot be undone.')) setStore(() => ({ ...initialStore, habits: [], records: {} })); }} className="mt-5" testId="button-reset"><RotateCcw size={14} /> Reset all data</Button></div></div></div>;
+  const exportData = () => { const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `habitr-${todayKey()}.json`; a.click(); URL.revokeObjectURL(a.href); };
+  return <div className="fade-in"><PageIntro eyebrow="Keep it yours" title="Settings" description="Habitr stores everything in this browser. Export a copy whenever you need one." /><div className="max-w-2xl space-y-5"><div className="rounded-xl border hairline bg-card p-6"><h2 className="text-sm font-bold">Appearance</h2><p className="mt-1 text-xs text-muted-foreground">Choose the atmosphere that makes checking in feel natural.</p><div className="mt-5 flex gap-2"><Button variant={store.settings.theme === 'dark' ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, theme: 'dark' } }))} testId="button-theme-dark"><Moon size={15} /> Dark</Button><Button variant={store.settings.theme === 'light' ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, theme: 'light' } }))} testId="button-theme-light"><Sun size={15} /> Light</Button></div></div><div className="rounded-xl border hairline bg-card p-6"><h2 className="text-sm font-bold">Week starts on</h2><div className="mt-4 flex gap-2"><Button variant={store.settings.weekStarts === 1 ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, weekStarts: 1 } }))}>Monday</Button><Button variant={store.settings.weekStarts === 0 ? 'solid' : 'outline'} onClick={() => setStore(s => ({ ...s, settings: { ...s.settings, weekStarts: 0 } }))}>Sunday</Button></div></div><div className="rounded-xl border hairline bg-card p-6"><h2 className="text-sm font-bold">Your data</h2><p className="mt-1 text-xs text-muted-foreground">A portable JSON file containing habits, records, and preferences.</p><div className="mt-5 flex flex-wrap gap-2"><Button variant="outline" onClick={exportData} testId="button-export"><Download size={15} /> Export data</Button><label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border hairline px-3.5 py-2.5 text-xs font-bold hover:bg-secondary"><Upload size={15} /> Import data<input type="file" accept=".json,application/json" onChange={file} className="hidden" data-testid="input-import" /></label></div></div><div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6"><h2 className="text-sm font-bold">Reset workspace</h2><p className="mt-1 text-xs text-muted-foreground">Remove every habit and daily record from this browser. This cannot be undone.</p><Button variant="danger" onClick={() => { if (window.confirm('Reset all habits and records? This cannot be undone.')) setStore(() => ({ ...initialStore, habits: [], records: {} })); }} className="mt-5" testId="button-reset"><RotateCcw size={14} /> Reset all data</Button></div></div></div>;
 }
 
 function AuthLoading() {
@@ -201,45 +205,48 @@ function PublicLanding() {
     <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-6 md:px-10">
       <Link href="/" className="flex items-center gap-3">
         <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"><SlidersHorizontal size={16} /></span>
-        <span className="text-[15px] font-bold tracking-[-.02em]">DAYLI</span>
+        <span className="text-[15px] font-bold tracking-[-.02em]">Habitr</span>
       </Link>
-      <div className="flex items-center gap-2">
+      <nav className="hidden items-center gap-6 md:flex">
+        <a href="#how-it-works" className="text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground">How it works</a>
         <Link href="/sign-in" className="rounded-lg px-3.5 py-2.5 text-xs font-bold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">Sign in</Link>
         <Link href="/sign-up" className="rounded-lg bg-primary px-3.5 py-2.5 text-xs font-bold text-primary-foreground transition-all hover:brightness-110">Create account</Link>
-      </div>
+      </nav>
+      <div className="flex items-center gap-2 md:hidden"><Link href="/sign-in" className="rounded-lg px-3 py-2 text-xs font-bold text-muted-foreground">Sign in</Link><Link href="/sign-up" className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Join Habitr</Link></div>
     </header>
-    <main className="mx-auto grid max-w-6xl gap-16 px-5 pb-20 pt-16 md:grid-cols-[1.05fr_.95fr] md:items-center md:px-10 md:pt-24">
-      <div>
-        <p className="mono mb-5 text-[10px] uppercase tracking-[.2em] text-primary">A quieter way to stay consistent</p>
-        <h1 className="max-w-xl text-5xl font-bold leading-[1.03] tracking-[-.06em] md:text-7xl">Keep your own promises visible.</h1>
-        <p className="mt-7 max-w-lg text-base leading-7 text-muted-foreground">DAYLI is a private place to track the practices that shape your days. Record what actually happened, see the pattern, and make the next check-in easy.</p>
-        <div className="mt-9 flex flex-wrap items-center gap-3">
-          <Link href="/sign-up" className="rounded-lg bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition-all hover:brightness-110">Start your private tracker</Link>
-          <Link href="/sign-in" className="rounded-lg border hairline bg-card px-5 py-3 text-sm font-bold transition-colors hover:bg-secondary">I already have an account</Link>
+    <main className="mx-auto max-w-6xl px-5 pb-20 pt-16 md:px-10 md:pt-24">
+      <section className="grid gap-12 md:grid-cols-[1.1fr_.9fr] md:items-center">
+        <div>
+          <p className="mono mb-5 text-[10px] uppercase tracking-[.2em] text-primary">Private habit tracking</p>
+          <h1 className="max-w-2xl text-5xl font-bold leading-[1.03] tracking-[-.06em] md:text-7xl">Make your everyday habits easier to keep.</h1>
+          <p className="mt-7 max-w-xl text-base leading-7 text-muted-foreground">Habitr gives you one calm place to plan small practices, check in honestly, and understand your progress over time.</p>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link href="/sign-up" className="rounded-lg bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition-all hover:brightness-110">Create your account</Link>
+            <Link href="/sign-in" className="rounded-lg border hairline bg-card px-5 py-3 text-sm font-bold transition-colors hover:bg-secondary">Sign in</Link>
+          </div>
+          <p className="mt-5 text-xs text-muted-foreground">Start with Google or email. Your habits stay private to your account.</p>
         </div>
-        <p className="mt-5 text-xs text-muted-foreground">Google or email sign-in. Your habits and records stay tied to your account.</p>
-      </div>
-      <div className="rounded-2xl border hairline bg-card p-6 md:p-8">
-        <div className="flex items-start justify-between border-b hairline pb-6">
-          <div><p className="mono text-[10px] uppercase tracking-[.18em] text-primary">Your daily view</p><p className="mt-3 text-2xl font-bold tracking-[-.04em]">A clear place to return to.</p></div>
-          <span className="mono text-xs text-muted-foreground">private</span>
+        <div className="rounded-2xl border hairline bg-card p-6 md:p-8">
+          <p className="mono text-[10px] uppercase tracking-[.18em] text-primary">A simple daily rhythm</p>
+          <h2 className="mt-4 text-2xl font-bold tracking-[-.04em]">Less planning. More returning.</h2>
+          <div className="mt-8 space-y-5">
+            {[['01', 'Choose a few habits', 'Keep your list focused on what matters now.'], ['02', 'Check in as you go', 'Mark a habit complete or record partial progress.'], ['03', 'See the pattern', 'Use streaks, history, and progress views to learn what works.']].map(([number, title, text]) => <div key={number} className="flex gap-4"><span className="mono grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-[10px] text-primary">{number}</span><div><h3 className="text-sm font-bold">{title}</h3><p className="mt-1 text-xs leading-5 text-muted-foreground">{text}</p></div></div>)}
+          </div>
         </div>
-        <div className="space-y-1 py-6">
-          {['Read 20 minutes', 'Study 2 hours', 'Evening reset'].map((item, index) => <div key={item} className="flex items-center gap-4 border-b hairline py-4 last:border-0">
-            <span className={`grid size-8 place-items-center rounded-full border ${index === 0 ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-transparent'}`}><Check size={15} /></span>
-            <span className={`text-sm font-semibold ${index === 0 ? 'text-muted-foreground line-through' : ''}`}>{item}</span>
-            <span className="mono ml-auto text-[10px] text-muted-foreground">{index === 0 ? '20 / 20 min' : index === 1 ? '45 / 120 min' : 'open'}</span>
-          </div>)}
-        </div>
-        <div className="flex items-end justify-between border-t hairline pt-6"><span className="text-xs text-muted-foreground">Today’s progress</span><span className="mono text-3xl text-primary">33%</span></div>
-      </div>
+      </section>
     </main>
-    <section className="mx-auto grid max-w-6xl gap-4 px-5 pb-20 md:grid-cols-3 md:px-10">
+    <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-8 px-5 pb-20 md:px-10">
+      <div className="mb-8 max-w-xl"><p className="mono mb-3 text-[10px] uppercase tracking-[.2em] text-primary">Everything in one place</p><h2 className="text-3xl font-bold tracking-[-.05em]">A home for the habits you want to keep.</h2></div>
+      <div className="grid gap-4 md:grid-cols-3">
       {[
-        ['Your data, your account', 'Different people can use the same app while keeping completely separate habits and records.'],
-        ['Partial progress stays honest', '45 of 120 minutes is visible as 45 of 120. A target is only complete when it is met.'],
+        ['Your data, your account', 'Different people can use Habitr while keeping completely separate habits and records.'],
+        ['Honest progress', 'Track partial effort like 45 of 120 minutes without turning it into a false completion.'],
         ['Useful, not noisy', 'Simple streaks, history, and trend views that help you understand your behavior.'],
       ].map(([title, text]) => <div key={title} className="border-t border-primary/40 pt-5"><h2 className="text-sm font-bold">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p></div>)}
+      </div>
+    </section>
+    <section className="mx-auto max-w-6xl px-5 pb-20 md:px-10">
+      <div className="flex flex-col gap-5 rounded-2xl border hairline bg-card p-7 md:flex-row md:items-center md:justify-between md:p-9"><div><p className="text-lg font-bold">Ready to build a better routine?</p><p className="mt-2 text-sm text-muted-foreground">Create your private Habitr account and start with one small habit.</p></div><Link href="/sign-up" className="inline-flex shrink-0 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition-all hover:brightness-110">Get started</Link></div>
     </section>
   </div>;
 }
@@ -272,7 +279,7 @@ function RouterApp() {
   const [store, setStoreState] = useState<Store>(() => loadStore(userId)); const [selectedDate, setSelectedDate] = useState(todayKey);
   const setStore = (fn: (s: Store) => Store) => setStoreState(s => fn(s));
   useEffect(() => { setStoreState(loadStore(userId)); }, [userId]);
-  useEffect(() => { localStorage.setItem(storeKey(userId), JSON.stringify(store)); document.documentElement.classList.toggle('light', store.settings.theme === 'light'); document.title = 'DAYLI — your daily practice'; }, [store, userId]);
+  useEffect(() => { localStorage.setItem(storeKey(userId), JSON.stringify(store)); document.documentElement.classList.toggle('light', store.settings.theme === 'light'); document.title = 'Habitr — your daily practice'; }, [store, userId]);
   const saveRecord = (date: string, habitId: string, value: number, note?: string) => setStore(s => ({ ...s, records: { ...s.records, [date]: { values: { ...(s.records[date]?.values || {}), [habitId]: value }, note: note ?? s.records[date]?.note ?? '' } } }));
   const goToday = () => setLocation('/today');
   return <AppShell store={store} onNavigate={() => {}}><Switch><Route path="/today"><Today store={store} selectedDate={selectedDate} setSelectedDate={setSelectedDate} saveRecord={saveRecord} /></Route><Route path="/habits"><Habits store={store} setStore={setStore} /></Route><Route path="/progress"><Progress store={store} /></Route><Route path="/history"><History store={store} setSelectedDate={setSelectedDate} onNavigate={goToday} /></Route><Route path="/settings"><Settings store={store} setStore={setStore} /></Route><Route component={NotFound} /></Switch></AppShell>;
