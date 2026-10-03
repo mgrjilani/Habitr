@@ -1,7 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
-import { ClerkProvider, Show, SignIn, SignUp, useAuth, useClerk, useUser } from '@clerk/react';
-import { publishableKeyFromHost } from '@clerk/react/internal';
-import { shadcn } from '@clerk/themes';
+import { supabase } from '@/lib/supabase';
 import { CalendarDays, Check, ChevronLeft, ChevronRight, Circle, Download, Edit3, Flame, History as HistoryIcon, LayoutGrid, Menu, Moon, MoreHorizontal, Plus, RotateCcw, Settings as SettingsIcon, SlidersHorizontal, Sun, Target, Trash2, Upload, X } from 'lucide-react';
 import { Link, Redirect, Route, Router as WouterRouter, Switch, useLocation } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
